@@ -418,20 +418,22 @@
 
         /* Style Tulisan 'HAPPY BIRTHDAY' */
         .fireworks-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 5em;
-            color: white;
-            /* Efek Glow Rose Gold */
-            text-shadow: 0 0 10px #ff69b4, 0 0 20px #ff69b4, 0 0 40px #d946a6;
-            z-index: 10;
-            position: absolute;
-            top: 46%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0;
-            white-space: nowrap;
-            animation: textFadeIn 2s ease-out 1s forwards; 
-        }
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2em, 8vw, 4.5em); /* Biar otomatis menyesuaikan layar */
+    color: white;
+    text-shadow: 0 0 10px #ff69b4, 0 0 20px #ff69b4, 0 0 40px #d946a6;
+    z-index: 10;
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    white-space: normal; /* biar teks bisa turun baris kalau terlalu panjang */
+    text-align: center;
+    padding: 0 10px;
+    animation: textFadeIn 2s ease-out 1s forwards; 
+}
+
 
         /* SMALL SUBTITLE under HAPPY BIRTHDAY */
         .fireworks-subtitle {
