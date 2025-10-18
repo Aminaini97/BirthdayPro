@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday! ✨</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- STYLE DASAR & ANIMASI DEKORASI --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #fdf8f3;
+            color: #4a4a4a;
+            overflow-x: hidden;
+            user-select: none; /* Mencegah seleksi teks saat bermain game */
+        }
+        .page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            transition: opacity 0.5s ease-in-out;
+            /* Atur semua halaman tersembunyi secara default */
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            pointer-events: none;
+            overflow: hidden; /* Penting untuk menampung animasi */
+        }
+        .page.active {
+            opacity: 1;
+            pointer-events: auto;
+            position: relative;
+        }
+
+        /* Dekorasi Floating (Bunga & Bintang) */
+        .float-decoration {
+            position: fixed;
+            pointer-events: none;
+            opacity: 0.6;
+            z-index: 1;
+        }
+        .float-decoration.flower1 { top: 10%; left: 5%; font-size: 3em; animation: floatAround 20s infinite ease-in-out; }
+        .float-decoration.flower2 { top: 60%; right: 8%; font-size: 2.5em; animation: floatAround 25s infinite ease-in-out reverse; }
+        .float-decoration.star1 { top: 30%; right: 15%; font-size: 2em; animation: twinkle 3s infinite; }
+        .float-decoration.star2 { bottom: 20%; left: 10%; font-size: 1.8em; animation: twinkle 4s infinite 1s; }
+
+        /* --- HALAMAN PEMBUKA (SPARKLE ENTRANCE) --- */
+        .opening-page { 
+            background-color: #fce4ec; /* Latar belakang sedikit gelap untuk kontras tirai */
+            overflow: hidden;
+            display: flex;
+        }
+        .opening-content {
+            z-index: 10; 
+            text-align: center;
+        }
+        
+        #sparkleTitle {
+        font-family: 'Playfair Display', serif;
+        background: linear-gradient(135deg, #FFD700, #F0E68C, #FFC0CB); /* Gold & Rose Gold */
+    
+        /* Properti Standard */
+        background-clip: text; 
+    
+        /* Properti Webkit untuk Kompatibilitas Browser Lama/Safari/Chrome */
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    
+        font-size: 4.5em;
+        margin-bottom: 10px;
+        animation: fadeInScale 1.5s ease;
+        }
+
+        .opening-subtitle { 
+            color: #d946a6; 
+            font-size: 1.5em;
+            font-weight: 300;
+            margin-bottom: 50px;
+            animation: fadeIn 2s ease 0.5s both;
+        }
+
+        .continue-btn {
+            padding: 15px 50px; 
+            background: linear-gradient(135deg, #ec4899, #d946a6);
+            color: white; border: none; border-radius: 50px; font-size: 1.2em; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 10px 30px rgba(236, 72, 153, 0.3);
+            opacity: 0;
+            transition: opacity 1s 1.5s ease, transform 0.3s;
+        }
+        .continue-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(236, 72, 153, 0.4); }
+
+        /* Style Tirai Velvet */
+        .curtain-left, .curtain-right {
+            position: absolute;
+            top: 0;
+            width: 50vw; /* Setiap tirai 50% lebar layar */
+            height: 100%;
+            background-color: #36283d; /* Warna Velvet Ungu Tua / Dark Elegant */
+            transition: transform 1.5s ease-out;
+            z-index: 5;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+        }
+        
+        .curtain-left {
+            left: 0;
+            transform: translateX(0); 
+            border-right: 2px solid #FFD700; /* Garis gold di tengah */
+        }
+        
+        .curtain-right {
+            right: 0;
+            transform: translateX(0);
+            border-left: 2px solid #FFD700;
+        }
+
+        /* Kelas untuk membuka tirai - Ditambahkan oleh JavaScript */
+        .curtain-reveal .curtain-left {
+            transform: translateX(-100%);
+        }
+
+        .curtain-reveal .curtain-right {
+            transform: translateX(100%);
+        }
+
+        .curtain-reveal #continueBtnNew {
+            opacity: 1; /* Tampilkan tombol setelah tirai terbuka */
+        }
+
+        /* --- HALAMAN PESAN --- */
+        .message-page { background: linear-gradient(135deg, #fef3f8 0%, #fff0f7 100%); }
+        .message-container {
+            /* Kontainer utama rata tengah dan lebar standar */
+            max-width: 700px; 
+            padding: 60px 50px; /* Padding simetris */
+            background: white; 
+            border-radius: 30px; 
+            box-shadow: 0 20px 60px rgba(217, 70, 166, 0.15); 
+            position: relative; 
+            z-index: 2; 
+            animation: fadeInUp 1s ease;
+            text-align: center; /* Kontainer utama rata tengah */
+        }
+        .message-title { font-family: 'Playfair Display', serif; font-size: 3em; color: #d946a6; margin-bottom: 15px; }
+        .divider { width: 100px; height: 2px; background: linear-gradient(90deg, transparent, #ec4899, transparent); margin: 0 auto; }
+        .message-text { font-size: 1.15em; line-height: 2; color: #666; text-align: center;
+            max-width: 500px; /* Batasi lebar teks di dalam container */
+            margin: 0 auto 40px auto;  margin-bottom: 40px; }
+        .message-text strong { color: #d946a6; font-weight: 600; }
+        .next-btn {
+            display: block; margin: 0 auto; padding: 15px 50px; background: linear-gradient(135deg, #ec4899, #d946a6); color: white; border: none; border-radius: 50px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 10px 30px rgba(236, 72, 153, 0.3);
+        }
+        .next-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(236, 72, 153, 0.4); }
+
+        /* --- HALAMAN GAME (TIUP LILIN) --- */
+        .game-page {
+            background: linear-gradient(135deg, #fff5f9 0%, #ffe9f2 100%);
+            display: none;
+        }
+
+        .game-page.active {
+            display: flex;
+        }
+
+        .game-container {
+            max-width: 800px;
+            text-align: center;
+            z-index: 2;
+            position: relative;
+        }
+
+        .game-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3em;
+            color: #d946a6;
+            margin-bottom: 20px;
+            animation: fadeInDown 1s ease;
+        }
+
+        .game-instruction {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 40px;
+            animation: fadeIn 1s ease 0.3s both;
+        }
+
+        .cake-area {
+            background: white;
+            padding: 50px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(217, 70, 166, 0.15);
+            margin-bottom: 30px;
+            position: relative;
+            animation: fadeInUp 1s ease 0.5s both;
+        }
+
+        .cake {
+            width: 250px;
+            height: 200px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .cake-layer {
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(135deg, #fbbcce, #f59cb7);
+            border-radius: 10px;
+            position: absolute;
+            bottom: 0;
+            box-shadow: 0 5px 20px rgba(236, 72, 153, 0.2);
+        }
+
+        .cake-layer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 15px;
+            background: #fee;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .cake-layer::after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: #ec4899;
+        }
+
+        .cake-top {
+            width: 90%;
+            height: 50px;
+            background: linear-gradient(135deg, #fee, #fdd6e2);
+            position: absolute;
+            bottom: 60px;
+            left: 5%;
+            border-radius: 100px 100px 0 0;
+        }
+
+        .candles-container {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+        }
+
+        .candle {
+            width: 8px;
+            height: 50px;
+            background: linear-gradient(180deg, #fbbcce, #f59cb7);
+            border-radius: 3px;
+            position: relative;
+        }
+
+        .wick {
+            width: 2px;
+            height: 8px;
+            background: #333;
+            position: absolute;
+            top: -8px;
+            left: 3px;
+        }
+
+        .flame {
+            width: 15px;
+            height: 20px;
+            background: radial-gradient(circle, #ffeb3b 0%, #ff9800 50%, #ff5722 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: flicker 0.3s infinite alternate;
+            opacity: 1;
+            transition: opacity 0.5s;
+        }
+
+        .candle.blown .flame {
+            opacity: 0;
+        }
+
+        .candle.blown .smoke {
+            display: block;
+        }
+
+        .smoke {
+            display: none;
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2em;
+            opacity: 0;
+            animation: smokeRise 2s ease-out;
+        }
+
+        .blow-control {
+            margin-top: 30px;
+        }
+
+        .blow-btn {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ec4899, #d946a6);
+            border: none;
+            color: white;
+            font-size: 3em;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 15px 40px rgba(236, 72, 153, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .blow-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .blow-btn:active {
+            transform: scale(0.95);
+        }
+
+        .blow-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+        }
+
+        .blow-btn.blowing::before {
+            animation: ripple 0.6s ease-out;
+        }
+
+        .blow-progress {
+            margin-top: 20px;
+            height: 10px;
+            background: #fee;
+            border-radius: 10px;
+            overflow: hidden;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .blow-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ec4899, #d946a6);
+            width: 0%;
+            transition: width 0.1s;
+            border-radius: 10px;
+        }
+
+        .blow-instruction {
+            margin-top: 15px;
+            color: #d946a6;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .celebration-message {
+            display: none;
+            font-size: 1.5em;
+            color: #d946a6;
+            font-weight: 600;
+            margin-top: 30px;
+            animation: fadeInScale 0.6s ease;
+        }
+        .final-btn {
+            display: none;
+            margin-top: 30px;
+            padding: 15px 50px;
+            background: linear-gradient(135deg, #ec4899, #d946a6);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.3);
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .final-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(236, 72, 153, 0.4);
+        }
+
+        /* --- HALAMAN FINAL (KEMBANG API & TEKS) --- */
+        .final-fireworks-page {
+            /* Latar belakang gelap untuk kesan sinematik */
+            background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1c 100%); 
+        }
+        .fireworks-container { text-align: center; position: relative; width: 100%; height: 100%; }
+
+        /* Style Tulisan 'HAPPY BIRTHDAY' */
+        .fireworks-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 5em;
+            color: white;
+            /* Efek Glow Rose Gold */
+            text-shadow: 0 0 10px #ff69b4, 0 0 20px #ff69b4, 0 0 40px #d946a6;
+            z-index: 10;
+            position: absolute;
+            top: 46%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            white-space: nowrap;
+            animation: textFadeIn 2s ease-out 1s forwards; 
+        }
+
+        /* SMALL SUBTITLE under HAPPY BIRTHDAY */
+        .fireworks-subtitle {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.25rem;
+            color: #ffd6ea;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            z-index: 10;
+            position: absolute;
+            top: calc(46% + 90px); /* posisi sedikit di bawah judul, sesuaikan jika perlu */
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            white-space: normal;
+            max-width: 85%;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        /* Kembang Api */
+        .fireworks {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            opacity: 0;
+            animation: fireworkExplode 1.5s ease-out forwards;
+            z-index: 5;
+        }
+        
+        /* --- ANIMASI KEYFRAMES (Dipertahankan) --- */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInScale { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-20px); } 60% { transform: translateY(-10px); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes floatAround { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 25% { transform: translate(20px, -20px) rotate(5deg); } 50% { transform: translate(0, -40px) rotate(0deg); } 75% { transform: translate(-20px, -20px) rotate(-5deg); } }
+        @keyframes twinkle { 0%, 100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+        @keyframes flicker { 0% { transform: translateX(-50%) scaleY(1); } 100% { transform: translateX(-50%) scaleY(1.1); } }
+        @keyframes smokeRise { 0% { opacity: 0.8; transform: translateX(-50%) translateY(0); } 100% { opacity: 0; transform: translateX(-50%) translateY(-50px); } }
+        @keyframes ripple { 0% { width: 0; height: 0; opacity: 1; } 100% { width: 300px; height: 300px; opacity: 0; } }
+        @keyframes textFadeIn { from { opacity: 0; letter-spacing: -0.5em; filter: blur(10px); } to { opacity: 1; letter-spacing: 0; filter: blur(0); } }
+        @keyframes fireworkExplode { 0% { opacity: 1; transform: scale(0.1); } 50% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.5); } }
+        
+        @media (max-width: 768px) {
+            .opening-title { font-size: 3em; }
+            .fireworks-title { font-size: 3em; top: 44%; }
+            .cake { width: 200px; height: 160px; }
+            .message-container { padding: 40px 30px; }
+            .fireworks-subtitle { top: calc(44% + 70px); font-size: 1rem; padding: 0 12px; }
+        }
+    </style>
+</head>
+<body>
+    <audio id="backgroundMusic" loop preload="auto">
+        <source src="elegant_bday_music.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="float-decoration flower1">🌸</div>
+    <div class="float-decoration flower2">🌺</div>
+    <div class="float-decoration star1">✨</div>
+    <div class="float-decoration star2">⭐</div>
+
+    <div class="page opening-page active" id="openingPage">
+        <div class="curtain-left"></div>
+        <div class="curtain-right"></div>
+        
+        <div class="opening-content">
+            <h1 class="opening-title" id="sparkleTitle">YOU ARE INVITED</h1>
+            <p class="opening-subtitle">Tap to Reveal the Celebration</p>
+            <button class="continue-btn" id="continueBtnNew">ENTER</button>
+        </div>
+    </div>
+
+    <div class="page message-page">
+        <div class="message-container">
+            <div class="message-header">
+                <h2 class="message-title">Ucapan Spesial</h2>
+                <div class="divider"></div>
+            </div>
+                        
+            <div class="message-text">
+                Selamat ulang tahun, <strong>Tante</strong>! 🎉<br>
+                Nambah umur, nambah manis <br> (tapi masih kalah manis sama aku 🤭)<br>
+                Semoga di umur yang baru ini tante makin bahagia, makin lancar rezakinya, dan makin sering traktir aku💅<br> Jangan suka marah-marah lagi yaa, nanti cepet tua loh (eh tapi udah... 😏 bercanda~)<br>
+                Pokoknya semoga semua yang tante pengen pelan-pelan jadi nyata.<br> Happy birthday, tante ter-ngeselin😜<br><br>
+                <em>With love & best wishes always</em> 🎂
+            </div>
+                        
+            <button class="next-btn" id="nextBtn">Lanjut ke Kejutan 🎁</button>
+        </div>
+    </div>
+
+    <div class="page game-page">
+        <div class="game-container">
+            <h2 class="game-title">Tiup Lilinnya! 🕯️</h2>
+            <p class="game-instruction"> Tekan & Tahan untuk Meniup </p>
+            
+            <div class="cake-area">
+                <div class="cake">
+                    <div class="cake-top"></div>
+                    <div class="cake-layer"></div>
+                    <div class="candles-container" id="candles">
+                        <div class="candle">
+                            <div class="wick"></div>
+                            <div class="flame"></div>
+                            <div class="smoke">💨</div>
+                        </div>
+                        <div class="candle">
+                            <div class="wick"></div>
+                            <div class="flame"></div>
+                            <div class="smoke">💨</div>
+                        </div>
+                        <div class="candle">
+                            <div class="wick"></div>
+                            <div class="flame"></div>
+                            <div class="smoke">💨</div>
+                        </div>
+                        <div class="candle">
+                            <div class="wick"></div>
+                            <div class="flame"></div>
+                            <div class="smoke">💨</div>
+                        </div>
+                        <div class="candle">
+                            <div class="wick"></div>
+                            <div class="flame"></div>
+                            <div class="smoke">💨</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="blow-control">
+                    <button class="blow-btn" id="blowBtn">💖</button>
+                    <div class="blow-progress">
+                        <div class="blow-progress-bar" id="progressBar"></div>
+                    </div>
+                    <p class="blow-instruction">Tekan & Tahan untuk Meniup!</p>
+                </div>
+                
+                <div class="celebration-message" id="celebrationMsg">
+                    🎉 Yeay! Semua lilin sudah ditiup! 🎉
+                </div>
+                
+                <button class="final-btn" id="finalBtnGame">Lihat Pesan Terakhir 💝</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="page final-fireworks-page">
+        <div class="fireworks-container">
+            <h2 class="fireworks-title" id="finalTitle"></h2>
+
+            <!-- === NEW: small subtitle under the main title ===
+                 Ganti teksnya nanti di bagian JS / placeholder di bawah.
+                 Placeholder text currently: "GANTI_DI_SINI: tulis pesan pendekmu"
+            -->
+            <div class="fireworks-subtitle" id="finalSubtitle">TANTE PINK</div>
+        </div>
+    </div>
+
+    <script>
+        let blowProgress = 0;
+        let isBlowing = false;
+        let blowInterval;
+        let candlesBlown = 0;
+        const totalCandles = 5;
+
+        // Mendapatkan elemen
+        const openingPage = document.getElementById('openingPage');
+        const continueBtnNew = document.getElementById('continueBtnNew');
+        const nextBtn = document.getElementById('nextBtn');
+        const blowBtn = document.getElementById('blowBtn');
+        const finalBtnGame = document.getElementById('finalBtnGame');
+        
+        // Audio Setup
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        backgroundMusic.volume = 0.4;
+
+        // Navigasi
+        function goToPage(pageClass) {
+            // Hilangkan semua kelas active
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            // Tampilkan halaman yang dituju
+            const targetPage = document.querySelector('.' + pageClass);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+        }
+        
+        // --- LOGIKA UTAMA ---
+
+        // 1. Sparkle Entrance (Tirai)
+        openingPage.addEventListener('click', function(e) {
+            // Hanya picu jika bukan tombol Lanjut dan belum terbuka
+            if (e.target.id !== 'continueBtnNew' && !openingPage.classList.contains('curtain-reveal')) {
+                openingPage.classList.add('curtain-reveal');
+                
+                // Opsional: Ganti teks di subtitle setelah klik
+                document.querySelector('.opening-subtitle').textContent = "Selamat Datang di Pesta Rahasia!";
+            }
+        });
+
+        // 2. Tombol Lanjut (Mulai Musik)
+        continueBtnNew.addEventListener('click', function() {
+            goToPage('message-page');
+            backgroundMusic.play().catch(e => console.log("Audio play prevented:", e));
+        });
+
+        // 3. Tombol Lanjut ke Game
+        nextBtn.addEventListener('click', function() {
+            goToPage('game-page');
+            setTimeout(initBlowGame, 100);
+        });
+
+        // 4. Tombol Final (Kembang Api)
+        finalBtnGame.addEventListener('click', function() {
+            goToPage('final-fireworks-page');
+            startFireworksPage();
+        });
+
+        // --- LOGIKA GAME TIUP LILIN ---
+        function initBlowGame() {
+            blowBtn.addEventListener('mousedown', startBlowing);
+            blowBtn.addEventListener('mouseup', stopBlowing);
+            blowBtn.addEventListener('mouseleave', stopBlowing);
+            // Touch events untuk mobile
+            blowBtn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                startBlowing();
+            });
+            blowBtn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                stopBlowing();
+            });
+        }
+
+        function startBlowing() {
+            if (candlesBlown >= totalCandles) return;
+            isBlowing = true;
+            blowBtn.classList.add('blowing');
+            
+            clearInterval(blowInterval); 
+            blowInterval = setInterval(function() {
+                if (blowProgress < 100) {
+                    blowProgress += 3; 
+                    document.getElementById('progressBar').style.width = blowProgress + '%';
+                    
+                    if (blowProgress >= 100) {
+                        blowOutCandle();
+                    }
+                }
+            }, 50);
+        }
+
+        function stopBlowing() {
+            isBlowing = false;
+            blowBtn.classList.remove('blowing');
+            clearInterval(blowInterval);
+            
+            let decayInterval = setInterval(function() {
+                if (blowProgress > 0 && !isBlowing) {
+                    blowProgress -= 5; 
+                    if (blowProgress < 0) blowProgress = 0;
+                    document.getElementById('progressBar').style.width = blowProgress + '%';
+                } else {
+                    clearInterval(decayInterval);
+                }
+            }, 100);
+        }
+
+        function blowOutCandle() {
+            const candles = document.querySelectorAll('.candle:not(.blown)');
+            if (candles.length > 0) {
+                candles[0].classList.add('blown');
+                candlesBlown++;
+                blowProgress = 0;
+                document.getElementById('progressBar').style.width = '0%';
+                
+                if (candlesBlown >= totalCandles) {
+                    clearInterval(blowInterval);
+                    stopBlowing();
+                    
+                    setTimeout(function() {
+                        document.getElementById('celebrationMsg').style.display = 'block';
+                        document.getElementById('finalBtnGame').style.display = 'inline-block';
+                    }, 500);
+                }
+            }
+        }
+
+        // --- LOGIKA KEMBANG API & TEKS FINAL (DENGAN EFEK KETIKAN BARU) ---
+function startFireworksPage() {
+    const finalTitleElement = document.getElementById('finalTitle');
+    const finalSubtitleEl = document.getElementById('finalSubtitle');
+
+    const textToType = "HAPPY BIRTHDAY!";
+    /* === ISI_TULISAN_KECIL_DISINI ===
+       Ganti string di bawah ini dengan pesan kecil kamu nanti.
+       Saat ini placeholder diset ke: "GANTI_DI_SINI: tulis pesan pendekmu"
+    */
+    const smallText = "GANTI_DI_SINI: tulis pesan pendekmu";
+
+    let i = 0;
+    const speed = 150; // Kecepatan ketikan dalam milidetik (150ms per huruf)
+
+    // Reset teks dan opacity untuk memulai animasi
+    finalTitleElement.textContent = '';
+    finalTitleElement.style.opacity = 1; // Pastikan elemen terlihat saat mengetik
+    finalSubtitleEl.textContent = '';
+    finalSubtitleEl.style.opacity = 0;
+
+    // Fungsi untuk mengetik huruf per huruf untuk judul
+    function typeWriterTitle() {
+        if (i < textToType.length) {
+            finalTitleElement.textContent += textToType.charAt(i);
+            i++;
+            setTimeout(typeWriterTitle, speed);
+        } else {
+            // Setelah selesai mengetik judul, beri jeda lalu ketik subtitle
+            setTimeout(() => {
+                typeWriterSubtitle();
+            }, 600);
+        }
+    }
+
+    // Ketik subtitle (kecil) setelah judul muncul
+    let j = 0;
+    const speedSmall = 40;
+    function typeWriterSubtitle() {
+        // tampilkan elemen subtitle (fade in)
+        finalSubtitleEl.style.transition = 'opacity 0.6s ease';
+        finalSubtitleEl.style.opacity = 1;
+
+        // ketik letter by letter (boleh juga muncul sekaligus - disini kita ketik)
+        if (j < smallText.length) {
+            finalSubtitleEl.textContent += smallText.charAt(j);
+            j++;
+            setTimeout(typeWriterSubtitle, speedSmall);
+        } else {
+            // subtitle selesai; kamu bisa tambahkan efek tambahan di sini jika mau
+        }
+    }
+
+    // Fungsi untuk membuat satu kembang api
+    function createFirework() {
+        const firework = document.createElement('div');
+        firework.className = 'fireworks';
+        
+        // Posisi Acak
+        firework.style.left = Math.random() * 80 + 10 + '%';
+        firework.style.top = Math.random() * 80 + 10 + '%';
+
+        // Warna Acak dan Efek box-shadow
+        const colors = ['#FFD700', '#FF69B4', '#ADFF2F', '#87CEFA', '#EE82EE'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+
+        let shadow = '';
+        for (let i = 0; i < 20; i++) {
+            const angle = Math.random() * 360;
+            const radius = Math.random() * 50 + 10;
+            const x = Math.cos(angle) * radius;
+            const y = Math.sin(angle) * radius;
+            shadow += `${x}px ${y}px 0 ${Math.random() * 2}px ${color}${i < 19 ? ',' : ''}`;
+        }
+        firework.style.boxShadow = shadow;
+        
+        document.querySelector('.fireworks-container').appendChild(firework);
+
+        setTimeout(() => firework.remove(), 2000);
+    }
+
+    // 1. Mulai Kembang Api (segera)
+    let fireworkInterval = setInterval(createFirework, 300);
+
+    // 2. Mulai Efek Ketikan (setelah jeda singkat)
+    setTimeout(typeWriterTitle, 500);
+
+    // 3. Hentikan Kembang Api setelah 6 detik
+    setTimeout(() => {
+        clearInterval(fireworkInterval);
+    }, 6000); 
+}
+
+        // Tampilkan halaman pertama saat load
+        document.addEventListener('DOMContentLoaded', () => {
+            goToPage('opening-page');
+        });
+    </script>
+</body>
+</html>
